@@ -164,30 +164,23 @@ async function readJson(request) {
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
-async function handleChat(request, response) {
+export async function processChat(body) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return sendJson(response, 503, {
-      error: "GEMINI_API_KEY가 설정되지 않았습니다. .env 파일을 확인해 주세요.",
-    });
+    return {
+      status: 503,
+      payload: { error: "GEMINI_API_KEY가 설정되지 않았습니다. 환경변수를 확인해 주세요." },
+    };
   }
 
-  let body;
-  try {
-    body = await readJson(request);
-  } catch (error) {
-    const status = error.message === "REQUEST_TOO_LARGE" ? 413 : 400;
-    return sendJson(response, status, { error: "요청 내용을 읽을 수 없습니다." });
-  }
-
-  const contents = normalizeMessages(body.messages);
+  const contents = normalizeMessages(body?.messages);
   if (!contents.length || contents.at(-1).role !== "user") {
-    return sendJson(response, 400, { error: "전송할 메시지를 입력해 주세요." });
+    return { status: 400, payload: { error: "전송할 메시지를 입력해 주세요." } };
   }
 
   const primaryModel = process.env.GEMINI_MODEL || "gemini-3.6-flash";
   const fallbackModel = process.env.GEMINI_FALLBACK_MODEL || "gemini-3.5-flash";
-  const webSearchEnabled = body.webSearch !== false;
+  const webSearchEnabled = body?.webSearch !== false;
   let search = null;
 
   if (webSearchEnabled) {
@@ -198,9 +191,10 @@ async function handleChat(request, response) {
         text: `\n\n<web_search_results>\n${search.text}\n</web_search_results>`,
       });
     } catch (error) {
-      return sendJson(response, 502, {
-        error: `실시간 검색에 실패했습니다. ${error.message}`,
-      });
+      return {
+        status: 502,
+        payload: { error: `실시간 검색에 실패했습니다. ${error.message}` },
+      };
     }
   }
 
@@ -230,20 +224,37 @@ async function handleChat(request, response) {
 
     const text = extractText(result);
     if (!text) {
-      return sendJson(response, 502, { error: "Gemini에서 답변을 받지 못했습니다." });
+      return { status: 502, payload: { error: "Gemini에서 답변을 받지 못했습니다." } };
     }
 
-    return sendJson(response, 200, {
-      text,
-      model,
-      webSearchUsed: webSearchEnabled,
-      sources: search?.sources || [],
-    });
+    return {
+      status: 200,
+      payload: {
+        text,
+        model,
+        webSearchUsed: webSearchEnabled,
+        sources: search?.sources || [],
+      },
+    };
   } catch (error) {
-    return sendJson(response, error.status || 502, {
-      error: error.message || "Gemini에 연결할 수 없습니다.",
-    });
+    return {
+      status: error.status || 502,
+      payload: { error: error.message || "Gemini에 연결할 수 없습니다." },
+    };
   }
+}
+
+async function handleChat(request, response) {
+  let body;
+  try {
+    body = await readJson(request);
+  } catch (error) {
+    const status = error.message === "REQUEST_TOO_LARGE" ? 413 : 400;
+    return sendJson(response, status, { error: "요청 내용을 읽을 수 없습니다." });
+  }
+
+  const result = await processChat(body);
+  return sendJson(response, result.status, result.payload);
 }
 
 const mimeTypes = {
