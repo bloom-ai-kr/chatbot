@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Google Gemini 기반의 간결한 AI 챗봇" />
+    <title>GEMINI // APEX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Gemini Apex 홈">
+          <span class="brand-mark" aria-hidden="true">G</span>
+          <span class="brand-copy">
+            <strong>GEMINI // APEX</strong>
+            <small>INTELLIGENCE SYSTEM</small>
+          </span>
+        </a>
+
+        <div class="system-state" aria-label="시스템 상태">
+          <span class="pulse"></span>
+          SYSTEM ONLINE
+        </div>
+
+        <button class="reset-button" id="reset-button" type="button" aria-label="대화 초기화">
+          RESET <span aria-hidden="true">↗</span>
+        </button>
+      </header>
+
+      <main class="workspace">
+        <aside class="intro-panel">
+          <div class="intro-index" aria-hidden="true">01</div>
+          <div class="intro-copy">
+            <span class="eyebrow">POWERED BY GOOGLE GEMINI</span>
+            <h1>ASK<br />BEYOND.</h1>
+            <p>아이디어에서 답까지.<br />한계 없이 질문하세요.</p>
+          </div>
+
+          <div class="suggestion-block">
+            <span class="eyebrow">QUICK START / 03</span>
+            <div class="suggestions" id="suggestions">
+              <button type="button" data-prompt="생성형 AI를 쉽게 설명해 줘">
+                <span>01</span> 생성형 AI 알아보기
+              </button>
+              <button type="button" data-prompt="오늘 집중력을 높이는 실전 팁 5가지를 알려줘">
+                <span>02</span> 집중력 높이기
+              </button>
+              <button type="button" data-prompt="주말에 할 수 있는 창의적인 프로젝트를 추천해 줘">
+                <span>03</span> 주말 프로젝트 찾기
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <section class="chat-panel" aria-label="Gemini 챗봇">
+          <div class="chat-header">
+            <div>
+              <span class="eyebrow">LIVE CONVERSATION</span>
+              <h2>GEMINI CHAT</h2>
+            </div>
+            <div class="chat-controls">
+              <button class="search-toggle is-active" id="search-toggle" type="button" aria-pressed="true">
+                <span class="search-dot" aria-hidden="true"></span>
+                <span id="search-label">LIVE WEB</span>
+              </button>
+              <div class="model-badge">
+                <span>MODEL</span>
+                <strong>FLASH</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="messages" id="messages" aria-live="polite" aria-label="대화 내용">
+            <article class="message assistant-message">
+              <div class="message-meta">
+                <span class="avatar" aria-hidden="true">G</span>
+                <span>GEMINI</span>
+                <time>NOW</time>
+              </div>
+              <div class="message-content">
+                <p>안녕하세요. 실시간 웹을 검색하는 AI 파트너, Gemini입니다.<br />오늘은 무엇을 함께 탐색해 볼까요?</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="composer-wrap">
+            <form class="composer" id="chat-form">
+              <label class="sr-only" for="message-input">메시지 입력</label>
+              <textarea id="message-input" rows="1" maxlength="8000" placeholder="질문을 입력하세요..." autocomplete="off"></textarea>
+              <button class="send-button" id="send-button" type="submit" aria-label="메시지 전송">
+                <span>SEND</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 19 19 5M8 5h11v11" />
+                </svg>
+              </button>
+            </form>
+            <div class="composer-meta">
+              <span>ENTER TO SEND / SHIFT + ENTER FOR NEW LINE</span>
+              <span>GEMINI CAN MAKE MISTAKES</span>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <template id="message-template">
+      <article class="message">
+        <div class="message-meta">
+          <span class="avatar" aria-hidden="true"></span>
+          <span class="author"></span>
+          <time>NOW</time>
+        </div>
+        <div class="message-content"></div>
+      </article>
+    </template>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
